@@ -12,12 +12,9 @@ files:
   - name: tests.py
     visible: false
     learner_created: false
-  - name: dir-for-files/nytimes
-    visible: true
-    learner_created: true
-feedback_link: https://hyperskill.org/projects/79/stages/437/implement#comment
+feedback_link: https://hyperskill.org/learn/step/7211#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: "Tue, 10 Dec 2024 07:51:12 UTC"
-record: -1
+record: 2

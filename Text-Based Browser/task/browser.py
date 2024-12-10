@@ -56,7 +56,10 @@ def browser(directory):
     if not os.access(directory, os.F_OK):
         os.mkdir(directory)
     else:
-        print(f"The directory '{directory}' already exists.")
+        pass # print(f"The directory '{directory}' already exists.")
+
+    history_stack = []  # Stack to store browser history
+    current_page = None  # Track the current page
 
     # User input loop
     while True:
@@ -65,13 +68,24 @@ def browser(directory):
         if user_input == "exit":
             break
 
-        # Check if the input matches a saved file
-        filename = format_filename(user_input)
-        filepath = os.path.join(directory, filename)
+        # # Check if the input matches a saved file
+        # filename = format_filename(user_input)
+        # filepath = os.path.join(directory, filename)
+        #
+        # if os.path.isfile(filepath):
+        #     with open(filepath, 'r') as file:
+        #         print(file.read())
 
-        if os.path.isfile(filepath):
-            with open(filepath, 'r') as file:
-                print(file.read())
+        elif user_input == "back":
+            if history_stack:
+                current_page = history_stack.pop()  # Go back to the previous page
+                filename = format_filename(current_page)
+                filepath = os.path.join(directory, filename)
+                with open(filepath, 'r') as file:
+                    print(file.read())
+            else:
+                pass  # Notify user if stack is empty
+
         elif is_valid_url(user_input):
             if user_input == "bloomberg.com":
                 content = bloomberg_com
@@ -81,11 +95,18 @@ def browser(directory):
                 print("Invalid URL")
                 continue
 
-            # Save and display content
+            # Save the current page to history before switching
+            if current_page:
+                history_stack.append(current_page)
+
+            # Set new current page
+            current_page = user_input
+            filename = format_filename(user_input)
             save_to_file(directory, filename, content)
             print(content)
+
         else:
-            print("Invalid URL")
+                print("Invalid URL")
 
 
 if __name__ == "__main__":
