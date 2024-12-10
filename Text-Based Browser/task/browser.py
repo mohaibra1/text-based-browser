@@ -1,3 +1,5 @@
+import os
+import sys
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -34,18 +36,61 @@ Twitter and Square Chief Executive Officer Jack Dorsey
  Tuesday, a signal of the strong ties between the Silicon Valley giants.
 '''
 
+# Validate and format the filename from the URL
+def format_filename(url):
+    return url.split('.')[0]
+
+# Save content to a file
+def save_to_file(directory, filename, content):
+    filepath = os.path.join(directory, filename)
+    with open(filepath, 'w') as file:
+        file.write(content)
+
+# Check if URL is valid
+def is_valid_url(url):
+    return '.' in url
+
 # write your code here
-def browser():
+def browser(directory):
+    # Create directory if it doesn't exist
+    if not os.access(directory, os.F_OK):
+        os.mkdir(directory)
+    else:
+        print(f"The directory '{directory}' already exists.")
+
+    # User input loop
     while True:
-        user_input = input()
-        if user_input.lower() == 'nytimes.com':
-            print(nytimes_com)
-        elif user_input.lower() == 'bloomberg.com':
-            print(bloomberg_com)
-        elif user_input == 'exit':
+        user_input = input().strip()
+
+        if user_input == "exit":
             break
+
+        # Check if the input matches a saved file
+        filename = format_filename(user_input)
+        filepath = os.path.join(directory, filename)
+
+        if os.path.isfile(filepath):
+            with open(filepath, 'r') as file:
+                print(file.read())
+        elif is_valid_url(user_input):
+            if user_input == "bloomberg.com":
+                content = bloomberg_com
+            elif user_input == "nytimes.com":
+                content = nytimes_com
+            else:
+                print("Invalid URL")
+                continue
+
+            # Save and display content
+            save_to_file(directory, filename, content)
+            print(content)
         else:
-            print('Unknown website. Please try again.')
+            print("Invalid URL")
 
 
-browser()
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python browser.py <directory_path>")
+        sys.exit(1)
+    else:
+        browser(sys.argv[1])
