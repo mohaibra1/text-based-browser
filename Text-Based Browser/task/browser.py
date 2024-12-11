@@ -1,6 +1,7 @@
 import os
 import sys
 import requests
+from bs4 import BeautifulSoup
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -62,10 +63,20 @@ def fetch_web_content(url):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for HTTP issues
-        return response.text
+        return response.content
     except requests.RequestException as e:
         print(f"Error: Unable to fetch the web page: {e}")
         return None
+
+# Extract readable text from HTML using BeautifulSoup
+def extract_readable_text(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    # Extract readable text from specific tags
+    readable_text = []
+    for tag in soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "ul", "ol", "li"]):
+        readable_text.append(tag.get_text(strip=True))
+    return "\n".join(readable_text)
+
 
 # write your code here
 def browser(directory):
@@ -106,8 +117,12 @@ def browser(directory):
         elif is_valid_url(user_input):
             url = format_url(user_input)
 
-            # Fetch web content
-            content = fetch_web_content(url)
+            html_content = fetch_web_content(url)
+            if html_content is None:
+                continue
+
+            # Extract readable text
+            readable_text = extract_readable_text(html_content)
 
             # Save the current page to history before switching
             if current_page:
@@ -116,8 +131,8 @@ def browser(directory):
             # Set new current page
             current_page = user_input
             filename = format_filename(user_input)
-            save_to_file(directory, filename, content)
-            print(content)
+            save_to_file(directory, filename, readable_text)
+            print(readable_text)
 
         else:
             print("Invalid URL")
