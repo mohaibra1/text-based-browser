@@ -2,6 +2,9 @@ import os
 import sys
 import requests
 from bs4 import BeautifulSoup
+from colorama import Fore, Style, init
+# Initialize colorama
+init(autoreset=True)
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -65,7 +68,7 @@ def fetch_web_content(url):
         response.raise_for_status()  # Raise an error for HTTP issues
         return response.content
     except requests.RequestException as e:
-        print(f"Error: Unable to fetch the web page: {e}")
+        print("Invalid URL")
         return None
 
 # Extract readable text from HTML using BeautifulSoup
@@ -74,7 +77,11 @@ def extract_readable_text(html_content):
     # Extract readable text from specific tags
     readable_text = []
     for tag in soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "ul", "ol", "li"]):
-        readable_text.append(tag.get_text(strip=True))
+        if tag.name == "a":
+            link_text = tag.get_text()
+            readable_text.append(Fore.BLUE + link_text + Style.RESET_ALL)  # Highlight links in blue and reset style
+            continue
+        readable_text.append(tag.get_text())
     return "\n".join(readable_text)
 
 

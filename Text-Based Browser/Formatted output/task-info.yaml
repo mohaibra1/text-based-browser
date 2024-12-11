@@ -12,6 +12,13 @@ files:
   - name: tests.py
     visible: false
     learner_created: false
+  - name: dir-for-files/docs
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/7215#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Wed, 11 Dec 2024 18:20:44 UTC"
 record: -1
