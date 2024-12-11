@@ -1,5 +1,6 @@
 import os
 import sys
+import requests
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -32,7 +33,7 @@ It's 50 years since the world was gripped by historic images
 Twitter CEO Jack Dorsey Gives Talk at Apple Headquarters
 
 Twitter and Square Chief Executive Officer Jack Dorsey 
- addressed Apple Inc. employees at the iPhone maker’s headquarters
+ addressed Apple Inc. employees at the iPhone maker?s headquarters
  Tuesday, a signal of the strong ties between the Silicon Valley giants.
 '''
 
@@ -43,12 +44,28 @@ def format_filename(url):
 # Save content to a file
 def save_to_file(directory, filename, content):
     filepath = os.path.join(directory, filename)
-    with open(filepath, 'w') as file:
+    with open(filepath, 'w', encoding='utf-8') as file:
         file.write(content)
 
 # Check if URL is valid
 def is_valid_url(url):
     return '.' in url
+
+# Add https:// to URLs if missing
+def format_url(url):
+    if not url.startswith("https://"):
+        url = "https://" + url
+    return url
+
+# Fetch content from a real webpage
+def fetch_web_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for HTTP issues
+        return response.text
+    except requests.RequestException as e:
+        print(f"Error: Unable to fetch the web page: {e}")
+        return None
 
 # write your code here
 def browser(directory):
@@ -81,19 +98,16 @@ def browser(directory):
                 current_page = history_stack.pop()  # Go back to the previous page
                 filename = format_filename(current_page)
                 filepath = os.path.join(directory, filename)
-                with open(filepath, 'r') as file:
+                with open(filepath, 'r', encoding='utf-8') as file:
                     print(file.read())
             else:
                 pass  # Notify user if stack is empty
 
         elif is_valid_url(user_input):
-            if user_input == "bloomberg.com":
-                content = bloomberg_com
-            elif user_input == "nytimes.com":
-                content = nytimes_com
-            else:
-                print("Invalid URL")
-                continue
+            url = format_url(user_input)
+
+            # Fetch web content
+            content = fetch_web_content(url)
 
             # Save the current page to history before switching
             if current_page:
@@ -106,7 +120,7 @@ def browser(directory):
             print(content)
 
         else:
-                print("Invalid URL")
+            print("Invalid URL")
 
 
 if __name__ == "__main__":
